@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import Country from "./components/country";
+import Universities from "./components/universities";
 
-function App() {
+const App = () => {
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [universities, setUniversities] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleChangeCountry = (event) => {
+    setSelectedCountry(event.target.value);
+    setUniversities([]);
+    setLoading(true);
+    fetch(
+      `http://universities.hipolabs.com/search?country=${event.target.value}`
+    )
+      .then((res) => res.json())
+      .then((response) => {
+        setLoading(false);
+        setUniversities(response);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+      });
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Country
+        selectedCountry={selectedCountry}
+        handleChangeCountry={handleChangeCountry}
+      />
+      <Universities
+        loading={loading}
+        universities={universities}
+        selectedCountry={selectedCountry}
+      />
     </div>
   );
-}
+};
 
 export default App;
