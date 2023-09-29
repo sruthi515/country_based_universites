@@ -1,29 +1,29 @@
-import React, { useState } from "react";
-import "./App.css";
-import Country from "./components/country";
+import React, { useEffect, useState } from "react";
 import Universities from "./components/universities";
+import Country from "./components/country";
+import "./App.css";
 
 const App = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      setUniversities([]);
+      setLoading(true);
+      const response = await fetch(
+        `http://universities.hipolabs.com/search?country=${selectedCountry}`
+      );
+      const newData = await response.json();
+      setUniversities(newData);
+      setLoading(false);
+    };
+    fetchData();
+  }, [selectedCountry]);
+
   const handleChangeCountry = (event) => {
     setSelectedCountry(event.target.value);
-    setUniversities([]);
-    setLoading(true);
-    fetch(
-      `http://universities.hipolabs.com/search?country=${event.target.value}`
-    )
-      .then((res) => res.json())
-      .then((response) => {
-        setLoading(false);
-        setUniversities(response);
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log(error);
-      });
   };
 
   return (
